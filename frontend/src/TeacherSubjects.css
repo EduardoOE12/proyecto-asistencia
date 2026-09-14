@@ -14,7 +14,7 @@
 .ts-box {
   background: #ffffff;
   width: 100%;
-  max-width: 500px;
+  max-width: 1200px; /* Ampliado para que quepa el horario */
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -86,49 +86,60 @@
   width: 100%;
 }
 
-/* LISTA DE MATERIAS (Estilo Pills ovaladas idénticas a TeacherAttendance) */
-.ts-materias-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* Estilos para la tabla de Horario */
+.ts-table-container {
+  overflow-x: auto;
+  margin-top: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border: 1px solid #ddd;
+}
+
+.schedule-table {
   width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+  font-size: 0.85rem;
 }
 
-.ts-materia-pill {
-  background: #fafafa;
-  border: 2px solid #ccc;
-  border-radius: 25px;
-  padding: 14px 22px;
-  text-align: left;
-  font-size: 1.05rem;
+.schedule-table th {
+  background-color: #e0e0e0;
+  color: #333;
   font-weight: bold;
-  color: #000000;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-  box-sizing: border-box;
+  text-align: center;
+  padding: 12px;
+  border: 1px solid #bbb;
+  text-transform: uppercase;
 }
 
-.ts-materia-pill:hover {
-  transform: scale(1.02);
+.schedule-table td {
+  border: 1px solid #bbb;
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #ffffff;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.schedule-table .time-col {
+  font-weight: bold;
+  background-color: #f9f9f9;
+  white-space: nowrap;
+}
+
+.schedule-table .subject-cell {
+  cursor: pointer;
+  font-weight: 600;
+  color: #111;
+}
+
+.schedule-table .subject-cell:hover {
   background-color: #cc0000;
   color: #ffffff;
-  border-color: #cc0000;
 }
 
-.ts-materia-text {
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.ts-materia-arrow {
-  font-size: 1.2rem;
-  font-weight: 900;
+.schedule-table .subject-cell:active {
+  background-color: #990000;
 }
 
 @keyframes fadeIn {
