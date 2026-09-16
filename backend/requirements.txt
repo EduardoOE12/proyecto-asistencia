@@ -1,0 +1,10 @@
+fastapi>=0-110.0
+uvicorn[standartd]>=0.28.0
+pydanti>=2.6.0
+sqlalchemy>=2.0.0
+python-jose[cryptograpyh]>=3.3.0
+paslib[bcrypt]>=1.7.4
+python-multipart>=0.0.9
+qrcode[pil]>=7.4.2
+pandas>=2.2.0
+openpyxl>=3.1.2

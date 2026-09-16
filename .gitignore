@@ -1,0 +1,19 @@
+# Python / FastApi
+backend/venv/
+backend/__pycahe__/
+*.pyc 
+*.pyo 
+*.pyd 
+.env 
+*.db 
+*.sqlite3 
+
+#Node / Vite 
+frontend/node_modules/ 
+frontend/dist/ 
+frontend/.env.local 
+
+#IDEs 
+.vscode/ 
+.idea/ 
+*.swp
