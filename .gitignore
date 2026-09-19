@@ -17,3 +17,6 @@ frontend/.env.local
 .vscode/ 
 .idea/ 
 *.swp
+
+backend/bd_prueba - Hoja 1.csv
+backend/regristos - Hoja 1.csv
