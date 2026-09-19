@@ -1,0 +1,63 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff; /* Puedes cambiar el color de fondo */
+  font-family: Arial, sans-serif;
+}
+
+.app-title {
+  font-size: 3rem;
+  color: #222;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.image-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 350px; /* Mantiene un espacio fijo para que no salte el contenido */
+}
+
+/* Estilo general para tus JPG */
+.opt-img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 15px; /* Bordes redondeados opcionales */
+}
+
+.fase-carga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.progress-bar-container {
+  width: 300px;
+  height: 25px;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  margin-top: 20px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #007bff; /* Color azul de la barra */
+  border-radius: 20px;
+  transition: width 0.1s linear;
+}
+
+.loading-text {
+  margin-top: 10px;
+  font-size: 1.1rem;
+  color: #555;
+  font-weight: 500;
+}
