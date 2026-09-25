@@ -146,6 +146,37 @@
   border-color: #cc0000;
 }
 
+/* Password wrapper con icono de ojo */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 42px; /* Espacio para el botón del ojo */
+}
+
+.btn-toggle-eye {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.btn-toggle-eye:hover {
+  color: #cc0000;
+}
+
 .submit-btn {
   margin-top: 10px;
 }
