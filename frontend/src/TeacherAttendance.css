@@ -1,0 +1,99 @@
+.attendance-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 30px;
+  background: #e6e4df;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  font-family: 'Arial', sans-serif;
+  color: #111;
+}
+
+/* Encabezado */
+.attendance-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.group-title {
+  font-size: 3rem;
+  font-weight: 900;
+  margin: 0;
+}
+
+.subject-info {
+  text-align: right;
+}
+
+.subject-info h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.subject-info p {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+
+/* Estructura de la Tabla */
+.attendance-table {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
+  gap: 12px;
+}
+
+/* Forma Ovalada (Pills) */
+.pill {
+  background: #fdfdfd;
+  border: 2px solid #333;
+  border-radius: 25px;
+  padding: 10px 15px;
+  text-align: center;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.header-pill {
+  background: #f0f0f0;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.student-name {
+  justify-content: center;
+  text-transform: uppercase;
+}
+
+/* Estilos de Estado */
+.status-atrasado {
+  color: #b35900;
+}
+
+.status-puntual {
+  color: #00732e;
+}
+
+.check-mark {
+  color: #2e7d32;
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+.date-text {
+  font-size: 0.9rem;
+}

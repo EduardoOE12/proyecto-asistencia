@@ -16,4 +16,14 @@ function App() {
   );
 }
 
+import TeacherAttendance from './TeacherAttendance';
+
+function App() {
+  return (
+    <div>
+      <TeacherAttendance />
+    </div>
+  );
+}
+
 export default App;

@@ -167,4 +167,11 @@ async def iniciar_sesion(datos: LoginData):
         "rol": rol_clean
     }
 
+# backend/app/main.py
+from fastapi import FastAPI
+from app.routers import asistencia # Importas tu nuevo módulo
 
+app = FastAPI()
+
+# Incluyes el router
+app.include_router(asistencia.router)
