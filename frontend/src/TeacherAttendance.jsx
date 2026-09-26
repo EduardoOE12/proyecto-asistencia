@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './TeacherAttendance.css';
 
-const TeacherAttendance = ({ user, onLogout }) => {
+const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
   const [infoClase] = useState({
     grupo: "3A IA",
-    materia: "MATEMATICAS",
+    materia: materia || "MATEMÁTICAS",
     horario: "7:00 am - 9:00am"
   });
 
@@ -110,6 +110,11 @@ const TeacherAttendance = ({ user, onLogout }) => {
       {/* Barra superior de sesión del docente */}
       <div className="teacher-topbar">
         <div className="teacher-info">
+          {onBack && (
+            <button className="btn-back-subject" onClick={onBack} title="Volver a materias">
+              ← Volver a materias
+            </button>
+          )}
           <span className="teacher-badge">Docente</span>
           <span>{user?.nombre || "Profesor Registrado"}</span>
         </div>

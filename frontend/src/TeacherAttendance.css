@@ -1,12 +1,15 @@
+/* Contenedor principal alineado con el sistema de diseño de la app */
 .attendance-container {
   max-width: 900px;
-  margin: 20px auto;
+  margin: 30px auto;
   padding: 30px;
-  background: #e6e4df;
+  background: #ffffff; /* Fondo blanco limpio como Login.box */
   border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  font-family: 'Arial', sans-serif;
-  color: #111;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  border-top: 5px solid #cc0000; /* Detalle rojo institucional arriba */
+  font-family: Arial, sans-serif;
+  color: #000000;
+  box-sizing: border-box;
 }
 
 /* Barra superior del Docente */
@@ -15,34 +18,52 @@
   justify-content: space-between;
   align-items: center;
   background: #2b2b2b;
-  color: #fff;
+  color: #ffffff;
   padding: 12px 20px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .teacher-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   font-size: 1rem;
 }
 
 .teacher-badge {
-  background: #8b0000;
-  color: #fff;
-  padding: 3px 8px;
+  background: #cc0000;
+  color: #ffffff;
+  padding: 4px 10px;
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: bold;
   text-transform: uppercase;
 }
 
+.btn-back-subject {
+  background: #e0e0e0;
+  color: #000000;
+  border: 1px solid #ccc;
+  padding: 7px 15px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: all 0.2s ease;
+}
+
+.btn-back-subject:hover {
+  background: #cccccc;
+  border-color: #999;
+}
+
 .btn-logout {
-  background: #c62828;
-  color: #fff;
+  background: #cc0000;
+  color: #ffffff;
   border: none;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: 20px;
   font-weight: bold;
   cursor: pointer;
@@ -50,7 +71,7 @@
 }
 
 .btn-logout:hover {
-  background: #9a0007;
+  background: #990000;
   transform: translateY(-1px);
 }
 
@@ -60,14 +81,15 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  border-bottom: 2px solid #ccc;
-  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 15px;
 }
 
 .group-title {
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 900;
   margin: 0;
+  color: #000000;
 }
 
 .subject-info {
@@ -78,12 +100,14 @@
   margin: 0;
   font-size: 1.4rem;
   font-weight: 800;
+  color: #cc0000;
   text-transform: uppercase;
 }
 
 .subject-info p {
   margin: 4px 0 0;
   font-weight: 700;
+  color: #666666;
 }
 
 /* Estructura de la Tabla */
@@ -99,10 +123,10 @@
   gap: 12px;
 }
 
-/* Forma Ovalada (Pills) */
+/* Forma Ovalada (Pills) acorde al diseño */
 .pill {
-  background: #fdfdfd;
-  border: 2px solid #333;
+  background: #fafafa;
+  border: 2px solid #ccc;
   border-radius: 25px;
   padding: 10px 15px;
   text-align: center;
@@ -110,42 +134,48 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+  color: #000000;
+  font-size: 0.95rem;
 }
 
 .interactive-pill {
   cursor: pointer;
   user-select: none;
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .interactive-pill:hover {
-  transform: scale(1.03);
-  background-color: #f0f4f8;
+  transform: scale(1.02);
+  border-color: #cc0000;
+  background-color: #fff5f5;
 }
 
 .header-pill {
-  background: #f0f0f0;
-  font-size: 0.95rem;
+  background: #e0e0e0;
+  border-color: #cccccc;
+  font-size: 0.9rem;
   letter-spacing: 0.5px;
+  color: #000000;
 }
 
 .student-name {
   justify-content: center;
   text-transform: uppercase;
+  color: #000000;
 }
 
 /* Estilos de Estado */
 .status-atrasado {
-  color: #b35900;
+  color: #d97706;
 }
 
 .status-puntual {
-  color: #00732e;
+  color: #2e7d32;
 }
 
 .status-falta {
-  color: #c62828;
+  color: #cc0000;
 }
 
 .check-mark {
@@ -155,11 +185,12 @@
 }
 
 .check-mark.absent {
-  color: #c62828;
+  color: #cc0000;
 }
 
 .date-text {
   font-size: 0.9rem;
+  color: #555555;
 }
 
 /* Footer / Guardar Asistencia */
@@ -169,7 +200,7 @@
   align-items: center;
   margin-top: 25px;
   padding-top: 15px;
-  border-top: 2px solid #ccc;
+  border-top: 2px solid #e0e0e0;
 }
 
 .save-status-msg {
@@ -179,19 +210,19 @@
 }
 
 .btn-save-attendance {
-  background: #8b0000;
-  color: #fff;
+  background: #cc0000;
+  color: #ffffff;
   border: none;
-  padding: 12px 28px;
+  padding: 12px 30px;
   border-radius: 25px;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 3px 6px rgba(204, 0, 0, 0.25);
   transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .btn-save-attendance:hover {
-  background: #600000;
+  background: #990000;
   transform: translateY(-2px);
 }

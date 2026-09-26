@@ -51,62 +51,55 @@ function App() {
       ) : (
         /* Pantalla para otros roles (Alumno / Director) */
         <div style={{
-          maxWidth: '800px',
-          margin: '40px auto',
-          padding: '30px',
+          maxWidth: '420px',
+          margin: '50px auto',
+          padding: '35px 25px',
           background: '#ffffff',
           borderRadius: '12px',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.15)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+          borderTop: '5px solid #cc0000',
           textAlign: 'center',
           fontFamily: 'Arial, sans-serif'
         }}>
           <div style={{
             display: 'inline-block',
-            padding: '6px 16px',
-            borderRadius: '20px',
-            background: '#8b0000',
+            padding: '4px 14px',
+            borderRadius: '4px',
+            background: '#cc0000',
             color: '#fff',
             fontWeight: 'bold',
+            fontSize: '0.85rem',
+            textTransform: 'uppercase',
             marginBottom: '15px'
           }}>
             {currentUser.rol}
           </div>
 
-          <h1 style={{ color: '#111', margin: '10px 0' }}>
+          <h1 style={{ color: '#000', fontSize: '1.5rem', margin: '10px 0' }}>
             Bienvenido(a), {currentUser.nombre}
           </h1>
           
-          <p style={{ color: '#666', marginBottom: '30px' }}>
-            Has iniciado sesión correctamente en el sistema.
+          <p style={{ color: '#666', marginBottom: '25px', fontSize: '0.95rem' }}>
+            Has iniciado sesión correctamente como {currentUser.rol}.
           </p>
 
-          <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <button 
-              onClick={() => setCurrentUser({ ...currentUser, rol: 'Docente' })}
-              style={{
-                padding: '12px 24px',
-                background: '#2b2b2b',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 'bold'
-              }}
-            >
-              Ir a Pantalla de Docentes (Pasar Lista)
-            </button>
-
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <button 
               onClick={handleLogout}
               style={{
+                width: '100%',
                 padding: '12px 24px',
-                background: '#c62828',
+                background: '#cc0000',
                 color: '#fff',
                 border: 'none',
-                borderRadius: '8px',
+                borderRadius: '25px',
                 cursor: 'pointer',
-                fontWeight: 'bold'
+                fontWeight: 'bold',
+                fontSize: '16px',
+                transition: 'background 0.2s'
               }}
+              onMouseOver={(e) => e.target.style.background = '#990000'}
+              onMouseOut={(e) => e.target.style.background = '#cc0000'}
             >
               Cerrar Sesión
             </button>
