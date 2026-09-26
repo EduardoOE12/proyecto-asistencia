@@ -1,18 +1,24 @@
 import React, { useState } from 'react';
 import LoadingScreen from './LoadingScreen';
 import Login from './Login';
+import TeacherSubjects from './TeacherSubjects';
 import TeacherAttendance from './TeacherAttendance';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  
+  // ESTADO: Para saber qué materia seleccionó el maestro
+  const [selectedSubject, setSelectedSubject] = useState(null);
 
   const handleLoginSuccess = (userObj) => {
     setCurrentUser(userObj);
+    setSelectedSubject(null); // Reiniciamos la materia al iniciar sesión
   };
 
   const handleLogout = () => {
     setCurrentUser(null);
+    setSelectedSubject(null);
   };
 
   return (
@@ -22,7 +28,26 @@ function App() {
       ) : !currentUser ? (
         <Login onLoginSuccess={handleLoginSuccess} />
       ) : currentUser.rol === 'Docente' ? (
-        <TeacherAttendance user={currentUser} onLogout={handleLogout} />
+        
+        /* --- LÓGICA PARA DOCENTES --- */
+        !selectedSubject ? (
+          /* 1. Si no ha elegido materia, mostramos la pantalla de materias (Diseño Libreta) */
+          <TeacherSubjects 
+            user={currentUser} 
+            onSubjectSelect={(materia) => setSelectedSubject(materia)}
+            onLogout={handleLogout}
+          />
+        ) : (
+          /* 2. Si ya eligió materia, mostramos la pantalla de asistencia (Diseño Oscuro) */
+          <TeacherAttendance 
+            user={currentUser} 
+            materia={selectedSubject} 
+            onBack={() => setSelectedSubject(null)} 
+            onLogout={handleLogout} 
+          />
+        )
+        /* ---------------------------------- */
+
       ) : (
         /* Pantalla para otros roles (Alumno / Director) */
         <div style={{
@@ -52,11 +77,10 @@ function App() {
           </h1>
           
           <p style={{ color: '#666', marginBottom: '30px' }}>
-            Has iniciado sesión correctamente en el sistema de asistencia.
+            Has iniciado sesión correctamente en el sistema.
           </p>
 
           <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            {/* Si desean ingresar a la pantalla de docentes desde aquí para pruebas */}
             <button 
               onClick={() => setCurrentUser({ ...currentUser, rol: 'Docente' })}
               style={{

@@ -1,0 +1,75 @@
+/* Fondo completamente blanco FORZADO */
+.pantalla-8-fondo {
+  background-color: #ffffff !important; 
+  min-height: 100vh !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 20px;
+  font-family: Arial, sans-serif !important;
+}
+
+/* El recuadro central (blanco para que se fusione con el fondo) */
+.libreta-container {
+  background-color: #db1313 !important; 
+  width: 100% !important;
+  max-width: 450px !important;
+  padding: 30px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Letras Negras FORZADAS */
+.texto-cerrobetis {
+  font-size: 2.5rem !important;
+  color: #000000 !important;
+  margin-top: 0 !important;
+  margin-bottom: 10px !important;
+  border-bottom: 2px solid #000000 !important;
+  padding-bottom: 10px !important;
+  text-align: center !important;
+  font-weight: bold !important;
+}
+
+.texto-docente {
+  font-size: 1.4rem !important;
+  color: #000000 !important;
+  margin-bottom: 25px !important;
+  text-align: center !important;
+}
+
+.texto-lista {
+  font-size: 1.2rem !important;
+  color: #000000 !important;
+  margin-bottom: 15px !important;
+  text-align: left !important;
+  font-weight: bold !important;
+}
+
+/* LISTA ESTRICTAMENTE VERTICAL (Evita que se pongan uno al lado del otro) */
+.lista-bloques {
+  display: flex !important;
+  flex-direction: column !important; /* Esta es la instrucción clave */
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+/* Botones en color negro con letra blanca FORZADOS */
+.bloque-materia {
+  background-color: #000000 !important;
+  border: none !important; 
+  border-radius: 6px !important; 
+  padding: 15px 20px !important;
+  font-size: 1.1rem !important;
+  text-align: center !important; 
+  cursor: pointer !important;
+  color: #ffffff !important; 
+  font-weight: bold !important;
+  width: 100% !important; /* Obliga al botón a extenderse de lado a lado */
+  transition: background-color 0.2s;
+}
+
+/* Efecto al pasar el ratón: un gris muy oscuro */
+.bloque-materia:hover {
+  background-color: #333333 !important;
+}
