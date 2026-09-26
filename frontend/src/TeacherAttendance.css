@@ -9,6 +9,51 @@
   color: #111;
 }
 
+/* Barra superior del Docente */
+.teacher-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2b2b2b;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.teacher-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+}
+
+.teacher-badge {
+  background: #8b0000;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.btn-logout {
+  background: #c62828;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-logout:hover {
+  background: #9a0007;
+  transform: translateY(-1px);
+}
+
 /* Encabezado */
 .attendance-header {
   display: flex;
@@ -68,6 +113,17 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
+.interactive-pill {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.interactive-pill:hover {
+  transform: scale(1.03);
+  background-color: #f0f4f8;
+}
+
 .header-pill {
   background: #f0f0f0;
   font-size: 0.95rem;
@@ -88,12 +144,54 @@
   color: #00732e;
 }
 
+.status-falta {
+  color: #c62828;
+}
+
 .check-mark {
   color: #2e7d32;
   font-size: 1.3rem;
   font-weight: 900;
 }
 
+.check-mark.absent {
+  color: #c62828;
+}
+
 .date-text {
   font-size: 0.9rem;
+}
+
+/* Footer / Guardar Asistencia */
+.attendance-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 2px solid #ccc;
+}
+
+.save-status-msg {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+.btn-save-attendance {
+  background: #8b0000;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-save-attendance:hover {
+  background: #600000;
+  transform: translateY(-2px);
 }

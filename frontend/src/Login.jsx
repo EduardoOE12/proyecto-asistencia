@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './Login.css';
 import lobosImg from './assets/lobos.JPG'; // Reutilizamos tu logo
 
-const Login = () => {
+const Login = ({ onLoginSuccess }) => {
   // Estados para controlar qué pantalla vemos
   const [pantalla, setPantalla] = useState('bienvenida'); // 'bienvenida', 'roles', 'formulario'
   const [rol, setRol] = useState(''); // 'Alumno', 'Docente', 'Director'
@@ -64,7 +64,17 @@ const Login = () => {
         return;
       }
 
-      alert(`¡${data.mensaje}!\nUsuario: ${data.nombre || data.alumno || identificador}`);
+      const userObj = {
+        nombre: data.nombre || data.alumno || identificador,
+        rol: data.rol || rol,
+        identificador: identificador
+      };
+
+      if (onLoginSuccess) {
+        onLoginSuccess(userObj);
+      } else {
+        alert(`¡${data.mensaje}!\nUsuario: ${userObj.nombre}`);
+      }
     } catch (error) {
       console.error(error);
       setErrorMsg('No se pudo establecer conexión con el servidor.');

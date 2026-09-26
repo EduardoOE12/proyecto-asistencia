@@ -29,7 +29,7 @@ const LoadingScreen = ({ onFinish }) => {
           return prev + 2; // Incremento de la barra
         });
       }, 50); // Velocidad de carga
-      
+
       return () => clearInterval(interval);
     }
 
@@ -45,12 +45,12 @@ const LoadingScreen = ({ onFinish }) => {
   return (
     <div className="loading-container">
       {/* El nombre de la aplicación siempre aparece */}
-      <h1 className="app-title">cerobetis</h1>
-      
+      <h1 className="app-title">cerrobetis</h1>
+
       <div className="image-container">
         {/* Pantalla 1 */}
         {fase === 1 && <img src={lobosImg} alt="Somos Lobos" className="opt-img" />}
-        
+
         {/* Pantalla 2 y 3 */}
         {(fase === 2 || fase === 3) && (
           <div className="fase-carga">
