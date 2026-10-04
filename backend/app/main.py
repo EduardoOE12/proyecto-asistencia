@@ -171,3 +171,33 @@ async def iniciar_sesion(datos: LoginData):
 from app.routers import asistencia
 app.include_router(asistencia.router)
 
+# --- Agregar a main.py ---
+
+@app.get("/api/alumnos/consulta/{identificador}")
+async def consultar_alumno(identificador: str):
+    identificador_clean = identificador.strip().lower()
+
+    if not os.path.exists(ARCHIVO_BD_ALUMNOS):
+        raise HTTPException(status_code=500, detail="El archivo bd_prueba - Hoja 1.csv no existe.")
+
+    with open(ARCHIVO_BD_ALUMNOS, mode='r', encoding='utf-8-sig') as file:
+        reader = csv.reader(file)
+        for row in reader:
+            if not row:
+                continue
+            # Ignorar encabezados
+            if row[0].upper().strip() in ["MATRICULA", "MATRÍCULA"]:
+                continue
+            
+            # bd_prueba: Columna 0 (Matrícula), Columna 1 (Teléfono), Columna 2 (Nombre)
+            if row[0].strip().lower() == identificador_clean:
+                return {
+                    "ok": True,
+                    "alumno": {
+                        "matricula": row[0].strip(),
+                        "telefono": row[1].strip() if len(row) > 1 else "",
+                        "nombre": row[2].strip() if len(row) > 2 else "Alumno"
+                    }
+                }
+
+    raise HTTPException(status_code=404, detail="El alumno no fue encontrado en la base de datos.")
