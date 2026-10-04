@@ -3,6 +3,7 @@ import LoadingScreen from './LoadingScreen';
 import Login from './Login';
 import TeacherSubjects from './TeacherSubjects';
 import TeacherAttendance from './TeacherAttendance';
+import StudentDashboard from './StudentDashboard';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,6 +18,8 @@ function App() {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('usuario_identificador');
+    localStorage.removeItem('usuario_rol');
     setCurrentUser(null);
     setSelectedSubject(null);
   };
@@ -48,8 +51,16 @@ function App() {
         )
         /* ---------------------------------- */
 
+      ) : currentUser.rol === 'Alumno' ? (
+        
+        /* --- LÓGICA PARA ALUMNOS --- */
+        <StudentDashboard 
+          user={currentUser} 
+          onLogout={handleLogout} 
+        />
+
       ) : (
-        /* Pantalla para otros roles (Alumno / Director) */
+        /* Pantalla para otros roles (Director) */
         <div style={{
           maxWidth: '420px',
           margin: '50px auto',

@@ -46,7 +46,10 @@ const Login = ({ onLoginSuccess }) => {
       if (response.ok) {
         alert(`¡Bienvenido ${data.alumno || rol}!`);
         
-        // 2. AQUI ESTÁ LA MAGIA: 
+        // Guardar sesión en localStorage
+        localStorage.setItem('usuario_identificador', identificador);
+        localStorage.setItem('usuario_rol', rol);
+
         // Le avisamos a App.jsx que el login fue exitoso y le mandamos los datos
         if (onLoginSuccess) {
           onLoginSuccess({
