@@ -171,7 +171,8 @@ async def iniciar_sesion(datos: LoginData):
 from app.routers import asistencia
 app.include_router(asistencia.router)
 
-# --- Agregar a main.py ---
+# Ruta de asignaciones docentes
+ARCHIVO_ASIGNACIONES_DOCENTES = os.path.join(BASE_DIR, "asignaciones_docentes.csv")
 
 @app.get("/api/alumnos/consulta/{identificador}")
 async def consultar_alumno(identificador: str):
@@ -201,3 +202,93 @@ async def consultar_alumno(identificador: str):
                 }
 
     raise HTTPException(status_code=404, detail="El alumno no fue encontrado en la base de datos.")
+
+
+@app.get("/api/docentes")
+async def listar_docentes():
+    docentes_map = {}
+
+    # 1. Cargar docentes desde registros-docentes.csv
+    if os.path.exists(ARCHIVO_BD_DOCENTES):
+        with open(ARCHIVO_BD_DOCENTES, mode='r', encoding='utf-8-sig') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if not row or row[0].upper().strip() in ["CORREO", "EMAIL"]:
+                    continue
+                correo = row[0].strip()
+                telefono = row[1].strip() if len(row) > 1 else ""
+                nombre = row[2].strip() if len(row) > 2 else "Docente"
+                docentes_map[correo.lower()] = {
+                    "correo": correo,
+                    "telefono": telefono,
+                    "nombre": nombre,
+                    "grupos": []
+                }
+
+    # 2. Cargar asignaciones de grupos si existen
+    if os.path.exists(ARCHIVO_ASIGNACIONES_DOCENTES):
+        with open(ARCHIVO_ASIGNACIONES_DOCENTES, mode='r', encoding='utf-8-sig') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if not row or row[0].upper().strip() in ["DOCENTE_CORREO", "CORREO"]:
+                    continue
+                correo = row[0].strip().lower()
+                nombre = row[1].strip() if len(row) > 1 else ""
+                grupos = [g.strip() for g in row[2:] if g.strip()] if len(row) > 2 else []
+
+                if correo in docentes_map:
+                    docentes_map[correo]["grupos"] = grupos
+                else:
+                    docentes_map[correo] = {
+                        "correo": row[0].strip(),
+                        "telefono": "",
+                        "nombre": nombre,
+                        "grupos": grupos
+                    }
+
+    return {"docentes": list(docentes_map.values())}
+
+
+@app.get("/api/grupos")
+async def listar_grupos():
+    return {"grupos": ["3A IA", "3B IA", "1A IA", "2A IA", "4A IA", "5A IA"]}
+
+
+class AsignarGruposData(BaseModel):
+    identificador: str
+    nombre: str
+    grupos: list[str]
+
+@app.post("/api/docentes/asignar-grupos")
+async def asignar_grupos_docente(datos: AsignarGruposData):
+    asig_existentes = {}
+
+    # Leer asignaciones actuales
+    if os.path.exists(ARCHIVO_ASIGNACIONES_DOCENTES):
+        with open(ARCHIVO_ASIGNACIONES_DOCENTES, mode='r', encoding='utf-8-sig') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                if not row or row[0].upper().strip() in ["DOCENTE_CORREO", "CORREO"]:
+                    continue
+                correo = row[0].strip().lower()
+                nombre = row[1].strip() if len(row) > 1 else ""
+                grupos = [g.strip() for g in row[2:] if g.strip()] if len(row) > 2 else []
+                asig_existentes[correo] = {"correo": row[0].strip(), "nombre": nombre, "grupos": grupos}
+
+    # Actualizar la asignación del docente
+    correo_key = datos.identificador.strip().lower()
+    asig_existentes[correo_key] = {
+        "correo": datos.identificador.strip(),
+        "nombre": datos.nombre.strip(),
+        "grupos": datos.grupos
+    }
+
+    # Sobreescribir archivo CSV
+    with open(ARCHIVO_ASIGNACIONES_DOCENTES, mode='w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(["DOCENTE_CORREO", "DOCENTE_NOMBRE", "GRUPOS"])
+        for key, item in asig_existentes.items():
+            writer.writerow([item["correo"], item["nombre"]] + item["grupos"])
+
+    return {"mensaje": "Asignación de grupos guardada correctamente", "docente": datos.nombre, "grupos": datos.grupos}
+

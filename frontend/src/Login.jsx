@@ -44,8 +44,6 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
-        alert(`¡Bienvenido ${data.alumno || rol}!`);
-        
         // Guardar sesión en localStorage
         localStorage.setItem('usuario_identificador', identificador);
         localStorage.setItem('usuario_rol', rol);

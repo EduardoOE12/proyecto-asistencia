@@ -4,6 +4,7 @@ import Login from './Login';
 import TeacherSubjects from './TeacherSubjects';
 import TeacherAttendance from './TeacherAttendance';
 import StudentDashboard from './StudentDashboard';
+import DirectorDashboard from './DirectorDashboard';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -59,8 +60,16 @@ function App() {
           onLogout={handleLogout} 
         />
 
+      ) : currentUser.rol === 'Director' ? (
+
+        /* --- LÓGICA PARA DIRECTORES --- */
+        <DirectorDashboard 
+          user={currentUser} 
+          onLogout={handleLogout} 
+        />
+
       ) : (
-        /* Pantalla para otros roles (Director) */
+        /* Pantalla fallback */
         <div style={{
           maxWidth: '420px',
           margin: '50px auto',
