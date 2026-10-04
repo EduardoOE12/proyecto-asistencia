@@ -16,7 +16,13 @@ const TeacherSubjects = ({ user, onSubjectSelect, onLogout }) => {
 
     // Verificamos si el día coincide y si la hora actual está dentro del rango
     if (currentDay === diaAsignado && timeInHours >= horaInicio && timeInHours < horaFin) {
-      onSubjectSelect(materia);
+      onSubjectSelect({
+        materia,
+        diaAsignado,
+        horaInicio,
+        horaFin,
+        grupo: "3A IA"
+      });
     } else {
       const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
       alert(`ACCESO DENEGADO\n\nNo puedes ingresar a esta materia. El horario asignado no coincide con el día y la hora actual.\n\nHorario de esta clase: ${dias[diaAsignado]} de ${horaInicio}:00 a ${horaFin}:00`);

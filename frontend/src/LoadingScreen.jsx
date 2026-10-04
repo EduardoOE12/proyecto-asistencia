@@ -45,7 +45,7 @@ const LoadingScreen = ({ onFinish }) => {
   return (
     <div className="loading-container">
       {/* El nombre de la aplicación siempre aparece */}
-      <h1 className="app-title">cerrobetis</h1>
+      <h1 className="app-title">CBTIS 287</h1>
 
       <div className="image-container">
         {/* Pantalla 1 */}

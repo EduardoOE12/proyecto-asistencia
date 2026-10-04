@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Html5QrcodeScanner } from 'html5-qrcode';
 import './StudentDashboard.css';
 import lobosImg from './assets/lobos.JPG';
 
@@ -9,7 +10,15 @@ const StudentDashboard = ({ user, onLogout }) => {
   
   const [estadoCamara, setEstadoCamara] = useState('inicial'); // 'inicial', 'activa', 'bloqueada'
   const [opcionPermiso, setOpcionPermiso] = useState(null); // 'una_vez', 'en_uso', 'nunca'
-  
+
+  // Estados para Registro de Asistencia vía QR / Token
+  const [tokenInput, setTokenInput] = useState('');
+  const [scanMessage, setScanMessage] = useState('');
+  const [scanStatus, setScanStatus] = useState(''); // 'success', 'error', ''
+  const [isSubmittingToken, setIsSubmittingToken] = useState(false);
+  const [mostrarScanner, setMostrarScanner] = useState(false);
+  const [asistenciasRegistradas, setAsistenciasRegistradas] = useState([]);
+
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
@@ -39,7 +48,6 @@ const StudentDashboard = ({ user, onLogout }) => {
       })
       .catch((err) => {
         console.error("Error al consultar alumno:", err);
-        // Fallback si no responde el backend pero tenemos el nombre en user prop
         if (user && user.nombre) {
           setAlumno({
             nombre: user.nombre,
@@ -115,6 +123,74 @@ const StudentDashboard = ({ user, onLogout }) => {
     setOpcionPermiso(null);
   };
 
+  // Inicialización del escáner de QR
+  useEffect(() => {
+    let scanner = null;
+    if (mostrarScanner) {
+      scanner = new Html5QrcodeScanner('qr-reader-container', { fps: 10, qrbox: { width: 220, height: 220 } }, false);
+      scanner.render(
+        (decodedText) => {
+          handleRegisterToken(decodedText);
+          scanner.clear().catch(e => console.log("Clear error:", e));
+          setMostrarScanner(false);
+        },
+        () => {}
+      );
+    }
+    return () => {
+      if (scanner) {
+        scanner.clear().catch(e => console.log("Clear error cleanup:", e));
+      }
+    };
+  }, [mostrarScanner]);
+
+  // Enviar Token QR al Backend para registrar Asistencia
+  const handleRegisterToken = async (tokenAValidar) => {
+    const tokenFinal = tokenAValidar || tokenInput;
+    if (!tokenFinal.trim()) {
+      setScanStatus('error');
+      setScanMessage('Por favor ingresa un código Token válido.');
+      return;
+    }
+
+    setIsSubmittingToken(true);
+    setScanMessage('');
+    setScanStatus('');
+
+    try {
+      const nombreAlumno = alumno ? alumno.nombre : (user?.nombre || "Alumno");
+      const res = await fetch('http://localhost:8000/api/asistencia/escaneo-qr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: tokenFinal,
+          identificador: identificador || "",
+          nombre: nombreAlumno
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        setScanStatus('success');
+        setScanMessage(data.mensaje || '¡Asistencia registrada correctamente!');
+        setTokenInput('');
+        setAsistenciasRegistradas(prev => [
+          { materia: data.materia, grupo: data.grupo, hora: new Date().toLocaleTimeString() },
+          ...prev
+        ]);
+      } else {
+        setScanStatus('error');
+        setScanMessage(data.detail || 'El código QR es inválido o el tiempo de 15 minutos ha expirado.');
+      }
+    } catch (err) {
+      console.error("Error al registrar asistencia por QR:", err);
+      setScanStatus('error');
+      setScanMessage('Error de conexión con el servidor.');
+    } finally {
+      setIsSubmittingToken(false);
+    }
+  };
+
   // Cleanup de la cámara al desmontar el componente
   useEffect(() => {
     return () => {
@@ -158,6 +234,88 @@ const StudentDashboard = ({ user, onLogout }) => {
         <h3 className="sd-section-title">PORTAL DEL ALUMNO</h3>
 
         {error && <div className="sd-error-banner">{error}</div>}
+
+        {/* MÓDULO DE ESCANEO DE ASISTENCIA QR */}
+        <div className="sd-card qr-student-card">
+          <div className="card-header">
+            <div className="avatar-icon">📱</div>
+            <div className="card-header-text">
+              <h4>Registro de Asistencia por QR</h4>
+              <p>Escanea el código QR proyectado por tu docente (Válido los primeros 15 min de clase)</p>
+            </div>
+          </div>
+
+          <div className="student-qr-body">
+            {scanMessage && (
+              <div className={`scan-banner ${scanStatus}`}>
+                {scanStatus === 'success' ? '✅ ' : '❌ '} {scanMessage}
+              </div>
+            )}
+
+            {/* OPCIÓN 1: ESCANEAR CON CÁMARA */}
+            <div className="qr-scanner-section">
+              {!mostrarScanner ? (
+                <button 
+                  className="btn-start-scanner"
+                  onClick={() => setMostrarScanner(true)}
+                >
+                  📷 Abrir Escáner QR con Cámara
+                </button>
+              ) : (
+                <div className="scanner-container-box">
+                  <div id="qr-reader-container"></div>
+                  <button 
+                    className="btn-cancel-scanner"
+                    onClick={() => setMostrarScanner(false)}
+                  >
+                    ✕ Cerrar Escáner
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="qr-divider">
+              <span>O INGRESA EL TOKEN DEL QR</span>
+            </div>
+
+            {/* OPCIÓN 2: INGRESAR CÓDIGO TOKEN MANUALMENTE */}
+            <form 
+              className="token-input-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleRegisterToken();
+              }}
+            >
+              <input 
+                type="text" 
+                className="token-input"
+                placeholder="Ejemplo: QR-A1B2C3"
+                value={tokenInput}
+                onChange={(e) => setTokenInput(e.target.value.toUpperCase())}
+              />
+              <button 
+                type="submit" 
+                className="btn-submit-token"
+                disabled={isSubmittingToken}
+              >
+                {isSubmittingToken ? 'Validando...' : 'Registrar Asistencia'}
+              </button>
+            </form>
+
+            {asistenciasRegistradas.length > 0 && (
+              <div className="recent-attendances">
+                <h5> Asistencias registradas hoy:</h5>
+                <ul>
+                  {asistenciasRegistradas.map((item, idx) => (
+                    <li key={idx}>
+                      <strong>{item.materia}</strong> ({item.grupo}) - Registrado a las {item.hora}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Tarjeta de Información del Alumno */}
         <div className="sd-card info-card">
@@ -280,3 +438,4 @@ const StudentDashboard = ({ user, onLogout }) => {
 };
 
 export default StudentDashboard;
+

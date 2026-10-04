@@ -354,3 +354,168 @@
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Módulo Alumno: Registro por QR / Token */
+.qr-student-card {
+  border-left: 5px solid #cc0000;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+}
+
+.student-qr-body {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.scan-banner {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.scan-banner.success {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+.scan-banner.error {
+  background-color: #f8d7da;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+
+.qr-scanner-section {
+  text-align: center;
+}
+
+.btn-start-scanner {
+  background: linear-gradient(135deg, #cc0000 0%, #990000 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(204, 0, 0, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-start-scanner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(204, 0, 0, 0.4);
+}
+
+.scanner-container-box {
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 12px;
+  border: 2px dashed #cc0000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#qr-reader-container {
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-cancel-scanner {
+  background: #6c757d;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.qr-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #888888;
+  font-size: 0.78rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin: 5px 0;
+}
+
+.qr-divider::before, .qr-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.qr-divider span {
+  padding: 0 10px;
+}
+
+.token-input-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.token-input {
+  flex: 1;
+  min-width: 180px;
+  padding: 12px 16px;
+  border: 2px solid #ccc;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.token-input:focus {
+  border-color: #cc0000;
+  box-shadow: 0 0 0 3px rgba(204, 0, 0, 0.15);
+}
+
+.btn-submit-token {
+  background: #2b2b2b;
+  color: #ffffff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: bold;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-submit-token:hover {
+  background: #000000;
+}
+
+.recent-attendances {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-top: 10px;
+}
+
+.recent-attendances h5 {
+  margin: 0 0 6px 0;
+  color: #166534;
+  font-size: 0.85rem;
+}
+
+.recent-attendances ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  color: #15803d;
+}
+
