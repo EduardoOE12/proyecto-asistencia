@@ -10,12 +10,11 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
   
-  // ESTADO: Para saber qué materia seleccionó el maestro
   const [selectedSubject, setSelectedSubject] = useState(null);
 
   const handleLoginSuccess = (userObj) => {
     setCurrentUser(userObj);
-    setSelectedSubject(null); // Reiniciamos la materia al iniciar sesión
+    setSelectedSubject(null);
   };
 
   const handleLogout = () => {
@@ -32,17 +31,13 @@ function App() {
       ) : !currentUser ? (
         <Login onLoginSuccess={handleLoginSuccess} />
       ) : currentUser.rol === 'Docente' ? (
-        
-        /* --- LÓGICA PARA DOCENTES --- */
         !selectedSubject ? (
-          /* 1. Si no ha elegido materia, mostramos la pantalla de materias (Diseño Libreta) */
           <TeacherSubjects 
             user={currentUser} 
             onSubjectSelect={(materia) => setSelectedSubject(materia)}
             onLogout={handleLogout}
           />
         ) : (
-          /* 2. Si ya eligió materia, mostramos la pantalla de asistencia (Diseño Oscuro) */
           <TeacherAttendance 
             user={currentUser} 
             materia={selectedSubject} 
@@ -50,26 +45,17 @@ function App() {
             onLogout={handleLogout} 
           />
         )
-        /* ---------------------------------- */
-
       ) : currentUser.rol === 'Alumno' ? (
-        
-        /* --- LÓGICA PARA ALUMNOS --- */
         <StudentDashboard 
           user={currentUser} 
           onLogout={handleLogout} 
         />
-
       ) : currentUser.rol === 'Director' ? (
-
-        /* --- LÓGICA PARA DIRECTORES --- */
         <DirectorDashboard 
           user={currentUser} 
           onLogout={handleLogout} 
         />
-
       ) : (
-        /* Pantalla fallback */
         <div style={{
           maxWidth: '420px',
           margin: '50px auto',

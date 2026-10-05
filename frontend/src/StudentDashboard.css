@@ -210,175 +210,6 @@
   font-style: italic;
   padding: 10px 0;
 }
-
-/* Cámara */
-.camera-content {
-  text-align: center;
-  width: 100%;
-}
-
-.permission-prompt {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 8px;
-  border: 1px dashed #ccc;
-  box-sizing: border-box;
-}
-
-.prompt-text {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 16px;
-}
-
-.permission-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.btn-perm {
-  padding: 10px 18px;
-  font-size: 0.88rem;
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  border: none;
-  transition: all 0.2s ease;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-.btn-once {
-  background-color: #6c757d;
-  color: #ffffff;
-}
-
-.btn-once:hover {
-  background-color: #5a6268;
-}
-
-.btn-use {
-  background-color: #0d6efd;
-  color: #ffffff;
-}
-
-.btn-use:hover {
-  background-color: #0b5ed7;
-}
-
-.btn-never {
-  background-color: #dc3545;
-  color: #ffffff;
-}
-
-.btn-never:hover {
-  background-color: #bb2d3b;
-}
-
-/* Vista Cámara Activa */
-.camera-active-view {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
-.camera-badge-success {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #d1e7dd;
-  color: #0f5132;
-  font-weight: bold;
-  font-size: 0.88rem;
-  padding: 6px 14px;
-  border-radius: 20px;
-  margin-bottom: 15px;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.pulse-dot {
-  color: #198754;
-  font-size: 1.2rem;
-  animation: blink 1.2s infinite;
-}
-
-@keyframes blink {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
-}
-
-.video-wrapper {
-  position: relative;
-  width: 100%;
-  max-width: 500px;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  border: 3px solid #2b2b2b;
-  background: #000;
-  box-sizing: border-box;
-}
-
-.video-feed {
-  width: 100%;
-  max-height: 380px;
-  object-fit: cover;
-  display: block;
-}
-
-.camera-actions {
-  margin-top: 15px;
-  width: 100%;
-}
-
-.btn-reset-perm {
-  background: #ffffff;
-  border: 1px solid #ced4da;
-  color: #495057;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  min-height: 38px;
-}
-
-.btn-reset-perm:hover {
-  background: #e9ecef;
-  color: #212529;
-}
-
-/* Vista Bloqueada */
-.camera-blocked-view {
-  background: #fff;
-  padding: 25px;
-  border-radius: 8px;
-  border: 1px solid #f5c2c7;
-  box-sizing: border-box;
-  width: 100%;
-}
-
-.blocked-icon {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-}
-
-.blocked-text {
-  color: #842029;
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 15px;
-}
-
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -462,13 +293,25 @@
 #qr-reader-container {
   width: 100%;
   max-width: 320px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000000;
 }
 
 #qr-reader-container video {
   width: 100% !important;
   max-width: 100% !important;
   height: auto !important;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Ocultar botones de subir imagen o capturas en el lector QR */
+#qr-reader-container__filescan_input,
+#qr-reader-container__status_span,
+#qr-reader-container a,
+#qr-reader-container button[id*="filescan"] {
+  display: none !important;
 }
 
 .btn-cancel-scanner {

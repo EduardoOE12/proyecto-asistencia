@@ -122,16 +122,20 @@
 .attendance-table {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   width: 100%;
+  overflow-x: auto;
+  padding-bottom: 6px;
 }
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
-  gap: 12px;
+  grid-template-columns: 1.2fr 2fr 1.2fr 0.8fr 1.1fr;
+  min-width: 600px;
+  gap: 10px;
   width: 100%;
   box-sizing: border-box;
+  align-items: center;
 }
 
 /* Forma Ovalada (Pills) acorde al diseño */
@@ -139,7 +143,7 @@
   background: #fafafa;
   border: 2px solid #ccc;
   border-radius: 25px;
-  padding: 10px 15px;
+  padding: 10px 14px;
   text-align: center;
   font-weight: bold;
   display: flex;
@@ -147,62 +151,70 @@
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   color: #000000;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   box-sizing: border-box;
-}
-
-.interactive-pill {
-  cursor: pointer;
-  user-select: none;
-  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.interactive-pill:hover {
-  transform: scale(1.02);
-  border-color: #cc0000;
-  background-color: #fff5f5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-pill {
-  background: #e0e0e0;
-  border-color: #cccccc;
-  font-size: 0.9rem;
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  font-size: 0.82rem;
   letter-spacing: 0.5px;
-  color: #000000;
+  color: #1f2937;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.student-id {
+  font-family: monospace;
+  font-size: 0.86rem;
+  color: #374151;
+  background: #f3f4f6;
+  border-color: #d1d5db;
 }
 
 .student-name {
   justify-content: center;
   text-transform: uppercase;
-  color: #000000;
+  color: #111827;
+  font-weight: 700;
 }
 
 /* Estilos de Estado */
 .status-atrasado {
-  color: #d97706;
+  color: #b45309;
+  background-color: #fef3c7;
+  border-color: #fde68a;
 }
 
 .status-puntual {
-  color: #2e7d32;
+  color: #15803d;
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
 }
 
 .status-falta {
-  color: #cc0000;
+  color: #b91c1c;
+  background-color: #fef2f2;
+  border-color: #fecaca;
 }
 
 .check-mark {
-  color: #2e7d32;
+  color: #15803d;
   font-size: 1.3rem;
   font-weight: 900;
 }
 
 .check-mark.absent {
-  color: #cc0000;
+  color: #b91c1c;
 }
 
 .date-text {
-  font-size: 0.9rem;
-  color: #555555;
+  font-size: 0.85rem;
+  color: #4b5563;
 }
 
 /* Footer / Guardar Asistencia */
@@ -734,23 +746,24 @@
   }
 
   .table-row {
-    grid-template-columns: 1.4fr 1.1fr 0.8fr 1.1fr;
-    gap: 6px;
+    grid-template-columns: 130px 1.8fr 110px 75px 105px;
+    min-width: 560px;
+    gap: 8px;
   }
 
   .pill {
-    padding: 8px 4px;
-    font-size: 0.78rem;
-    border-radius: 16px;
+    padding: 8px 8px;
+    font-size: 0.8rem;
+    border-radius: 18px;
   }
 
   .header-pill {
     font-size: 0.75rem;
-    padding: 8px 2px;
+    padding: 8px 4px;
   }
 
   .date-text {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
   }
 
   .attendance-actions {
@@ -772,29 +785,29 @@
 
 @media (max-width: 480px) {
   .attendance-container {
-    padding: 12px 8px;
+    padding: 16px 12px;
   }
 
   .table-row {
-    grid-template-columns: 1.3fr 1fr 0.7fr 1fr;
-    gap: 4px;
+    grid-template-columns: 120px 1.6fr 105px 70px 95px;
+    min-width: 520px;
+    gap: 6px;
   }
 
   .pill {
-    padding: 6px 2px;
-    font-size: 0.7rem;
-    border-radius: 12px;
-    word-break: break-word;
+    padding: 7px 6px;
+    font-size: 0.75rem;
+    border-radius: 16px;
   }
 
   .header-pill {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     padding: 6px 2px;
     letter-spacing: 0;
   }
 
   .date-text {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
   }
 }
 

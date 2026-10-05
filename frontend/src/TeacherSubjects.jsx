@@ -3,18 +3,16 @@ import './TeacherSubjects.css';
 import lobosImg from './assets/lobos.JPG';
 
 const TeacherSubjects = ({ user, onSubjectSelect, onLogout }) => {
-  // Jalamos el nombre del docente de la sesión activa
   const teacherName = user?.nombre || "Docente Registrado";
 
   const handleSubjectClick = (materia, diaAsignado, horaInicio, horaFin) => {
     const now = new Date();
-    const currentDay = now.getDay(); // 0=Dom, 1=Lun, 2=Mar, 3=Mie, 4=Jue, 5=Vie, 6=Sab
+    const currentDay = now.getDay();
     const currentHour = now.getHours();
     const currentMinutes = now.getMinutes();
     
     const timeInHours = currentHour + (currentMinutes / 60);
 
-    // Verificamos si el día coincide y si la hora actual está dentro del rango
     if (currentDay === diaAsignado && timeInHours >= horaInicio && timeInHours < horaFin) {
       onSubjectSelect({
         materia,
@@ -33,7 +31,6 @@ const TeacherSubjects = ({ user, onSubjectSelect, onLogout }) => {
     <div className="ts-container">
       <div className="ts-box">
         
-        {/* Barra superior de sesión del docente */}
         <div className="ts-topbar">
           <div className="ts-teacher-info">
             <span className="teacher-badge">Docente</span>

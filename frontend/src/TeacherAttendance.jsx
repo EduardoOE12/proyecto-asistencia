@@ -3,9 +3,9 @@ import { QRCodeCanvas } from 'qrcode.react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import './TeacherAttendance.css';
+import { API_BASE_URL } from './config';
 
 const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
-  // Extraer datos de la materia (objeto o string)
   const nombreMateria = typeof materia === 'object' ? materia.materia : (materia || "MATEMÁTICAS");
   const horaInicio = typeof materia === 'object' ? materia.horaInicio : 7;
   const horaFin = typeof materia === 'object' ? materia.horaFin : 9;
@@ -18,15 +18,14 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
   });
 
   const [alumnos, setAlumnos] = useState([
-    { id: 1, nombre: "FATIMA", estado: "ATRASADO", asistio: true, fecha: "17-SEP-26" },
-    { id: 2, nombre: "CLAUDIA", estado: "PUNTUAL", asistio: true, fecha: "17-SEP-26" },
-    { id: 3, nombre: "REINA", estado: "PUNTUAL", asistio: true, fecha: "17-SEP-26" }
+    { id: 1, matricula: "XXXX0000000001", nombre: "ALUMNO 1", estado: "FALTA", asistio: false, fecha: "---" },
+    { id: 2, matricula: "XXXX0000000002", nombre: "ALUMNO 2", estado: "FALTA", asistio: false, fecha: "---" },
+    { id: 3, matricula: "XXXX0000000003", nombre: "ALUMNO 3", estado: "FALTA", asistio: false, fecha: "---" }
   ]);
 
   const [saveMessage, setSaveMessage] = useState('');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Estados para el QR Token de 15 minutos
   const [qrToken, setQrToken] = useState(null);
   const [segundosRestantes, setSegundosRestantes] = useState(0);
   const [isGeneratingQR, setIsGeneratingQR] = useState(false);
@@ -34,14 +33,12 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [alumnosQR, setAlumnosQR] = useState([]);
 
-  // Ref para evitar descargas duplicadas de PDF para el mismo QR
   const pdfDescargadoRef = useRef(false);
 
-  // Intentar cargar la lista de alumnos del backend
   useEffect(() => {
     const fetchAlumnos = async () => {
       try {
-        const response = await fetch('http://localhost:8000/api/asistencia/alumnos');
+        const response = await fetch(`${API_BASE_URL}/api/asistencia/alumnos`);
         if (response.ok) {
           const data = await response.json();
           if (data.alumnos && data.alumnos.length > 0) {
@@ -49,17 +46,16 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
           }
         }
       } catch (err) {
-        console.log("Usando datos locales de asistencia:", err);
+        console.error(err);
       }
     };
     fetchAlumnos();
   }, []);
 
-  // Consultar si ya existe un QR activo al montar el componente
   useEffect(() => {
     const consultarQRActivo = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/api/asistencia/qr-activo?materia=${encodeURIComponent(infoClase.materia)}&grupo=${encodeURIComponent(infoClase.grupo)}`);
+        const res = await fetch(`${API_BASE_URL}/api/asistencia/qr-activo?materia=${encodeURIComponent(infoClase.materia)}&grupo=${encodeURIComponent(infoClase.grupo)}`);
         if (res.ok) {
           const data = await res.json();
           if (data.activo && data.token) {
@@ -69,13 +65,12 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
           }
         }
       } catch (err) {
-        console.error("Error al consultar QR activo:", err);
+        console.error(err);
       }
     };
     consultarQRActivo();
   }, [infoClase.materia, infoClase.grupo]);
 
-  // Temporizador para la validez de 15 minutos del QR
   useEffect(() => {
     let interval = null;
     if (qrToken && segundosRestantes > 0) {
@@ -94,41 +89,49 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
     };
   }, [qrToken, segundosRestantes]);
 
-  // Polling para actualizar los alumnos que van escaneando el QR en vivo
   useEffect(() => {
     let polling = null;
     if (qrToken && segundosRestantes > 0) {
       polling = setInterval(async () => {
         try {
-          const res = await fetch(`http://localhost:8000/api/asistencia/qr-activo?materia=${encodeURIComponent(infoClase.materia)}&grupo=${encodeURIComponent(infoClase.grupo)}`);
+          const res = await fetch(`${API_BASE_URL}/api/asistencia/qr-activo?materia=${encodeURIComponent(infoClase.materia)}&grupo=${encodeURIComponent(infoClase.grupo)}`);
           if (res.ok) {
             const data = await res.json();
             if (data.activo && data.alumnos_registrados) {
               setAlumnosQR(data.alumnos_registrados);
               
-              // Marcar como PUNTUAL en la tabla local si no lo estaban
               setAlumnos(prevAlumnos => prevAlumnos.map(alum => {
-                const escaneo = data.alumnos_registrados.some(
-                  a => a.toLowerCase().trim() === alum.nombre.toLowerCase().trim()
-                );
+                const escaneo = data.alumnos_registrados.some(a => {
+                  if (typeof a === 'string') {
+                    return a.toLowerCase().trim() === alum.nombre.toLowerCase().trim();
+                  }
+                  const matRegistrada = (a.matricula || a.identificador || "").toLowerCase().trim();
+                  const matAlumno = (alum.matricula || alum.identificador || "").toLowerCase().trim();
+                  const nomRegistrado = (a.nombre || "").toLowerCase().trim();
+                  const nomAlumno = (alum.nombre || "").toLowerCase().trim();
+
+                  if (matRegistrada && matAlumno && matRegistrada === matAlumno) return true;
+                  if (nomRegistrado && nomAlumno && nomRegistrado === nomAlumno) return true;
+                  return false;
+                });
+
                 if (escaneo) {
                   return { ...alum, estado: "PUNTUAL", asistio: true };
                 }
-                return alum;
+                return { ...alum, estado: "FALTA", asistio: false };
               }));
             }
           }
         } catch (e) {
-          console.error("Error polling QR:", e);
+          console.error(e);
         }
-      }, 3000);
+      }, 2000);
     }
     return () => {
       if (polling) clearInterval(polling);
     };
   }, [qrToken, segundosRestantes, infoClase.materia, infoClase.grupo]);
 
-  // DESCARGA AUTOMÁTICA DE PDF CUANDO TERMINA EL TIEMPO DEL QR (15 MIN)
   useEffect(() => {
     if (qrToken && segundosRestantes === 0 && !pdfDescargadoRef.current) {
       pdfDescargadoRef.current = true;
@@ -136,22 +139,18 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
     }
   }, [segundosRestantes, qrToken]);
 
-  // Función para generar y descargar el PDF de Asistencia
   const descargarPDFAsistencia = (origen = "manual") => {
     try {
       const doc = new jsPDF();
       const ahora = new Date();
       const fechaTexto = ahora.toLocaleDateString('es-MX', {
         day: '2-digit', month: '2-digit', year: 'numeric'
-      }).replace(/\//g, '-'); // DD-MM-YYYY
+      }).replace(/\//g, '-');
 
       const materiaClean = infoClase.materia.replace(/[^a-zA-Z0-9]/g, '_');
       const grupoClean = infoClase.grupo.replace(/[^a-zA-Z0-9]/g, '_');
-      
-      // Nombre del archivo que contiene FECHA, MATERIA y GRUPO
       const nombreArchivo = `Asistencia_${fechaTexto}_${materiaClean}_${grupoClean}.pdf`;
 
-      // 1. Franja institucional superior (Rojo Lobos #cc0000)
       doc.setFillColor(204, 0, 0);
       doc.rect(0, 0, 210, 26, 'F');
 
@@ -160,7 +159,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
       doc.setFontSize(15);
       doc.text('SOMOS LOBOS - REPORTE OFICIAL DE ASISTENCIA (QR)', 14, 17);
 
-      // 2. Metadatos de la clase
       doc.setTextColor(33, 37, 41);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
@@ -196,7 +194,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
       doc.setDrawColor(220, 220, 220);
       doc.line(14, 54, 196, 54);
 
-      // 3. Resumen estadístico
       const totalAlumnos = alumnos.length;
       const asistieron = alumnos.filter(a => a.asistio).length;
       const faltas = totalAlumnos - asistieron;
@@ -208,7 +205,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
       doc.setTextColor(50, 50, 50);
       doc.text(`TOTAL ALUMNOS: ${totalAlumnos}   |   ASISTIERON: ${asistieron}   |   FALTAS: ${faltas}`, 20, 65);
 
-      // 4. Tabla de Asistencia
       const rows = alumnos.map((al, idx) => [
         idx + 1,
         al.nombre,
@@ -239,27 +235,25 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
         styles: { fontSize: 9, cellPadding: 4, font: 'helvetica' }
       });
 
-      // 5. Guardar/Descargar PDF
       doc.save(nombreArchivo);
 
       if (origen === "automatico") {
-        setSaveMessage(`📄 ¡Tiempo de QR finalizado! PDF guardado automáticamente: ${nombreArchivo}`);
+        setSaveMessage(`📄 Tiempo de QR finalizado. Reporte generado: ${nombreArchivo}`);
       } else {
         setSaveMessage(`📄 PDF descargado correctamente: ${nombreArchivo}`);
       }
     } catch (err) {
-      console.error("Error al generar PDF:", err);
+      console.error(err);
     }
   };
 
-  // Función para generar el código QR con el token válido por 15 minutos
   const handleGenerarQR = async () => {
     setIsGeneratingQR(true);
     setQrError('');
-    pdfDescargadoRef.current = false; // Reiniciar estado de descarga para el nuevo QR
+    pdfDescargadoRef.current = false;
 
     try {
-      const response = await fetch('http://localhost:8000/api/asistencia/generar-qr', {
+      const response = await fetch(`${API_BASE_URL}/api/asistencia/generar-qr`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -274,77 +268,30 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
       const data = await response.json();
       if (response.ok && data.ok) {
         setQrToken(data.token);
-        setSegundosRestantes(data.duracion_segundos || 900); // 15 minutos = 900s
+        setSegundosRestantes(data.duracion_segundos || 900);
         setShowQRModal(true);
       } else {
-        setQrError(data.detail || 'No se pudo generar el código QR. Verifica la hora de la clase.');
+        setQrError(data.detail || 'No se pudo generar el código QR.');
       }
     } catch (err) {
       console.error("Error al generar QR:", err);
-      // Fallback local en caso de desconexión parcial
-      const tokenLocal = `QR-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      setQrToken(tokenLocal);
-      setSegundosRestantes(900);
-      setShowQRModal(true);
+      setQrError('No se pudo conectar con el servidor para generar el código QR.');
     } finally {
       setIsGeneratingQR(false);
     }
   };
 
-  // Formatear segundos a MM:SS
   const formatearTiempo = (totalSegundos) => {
     const min = Math.floor(totalSegundos / 60);
     const seg = totalSegundos % 60;
     return `${min.toString().padStart(2, '0')}:${seg.toString().padStart(2, '0')}`;
   };
 
-  // Alternar asistencia (✓ / X)
-  const toggleAsistencia = (id) => {
-    setAlumnos(prev => prev.map(alumno => {
-      if (alumno.id === id) {
-        const nuevoAsistio = !alumno.asistio;
-        return {
-          ...alumno,
-          asistio: nuevoAsistio,
-          estado: nuevoAsistio ? "PUNTUAL" : "FALTA"
-        };
-      }
-      return alumno;
-    }));
-  };
-
-  // Alternar estado (PUNTUAL -> ATRASADO -> FALTA -> PUNTUAL)
-  const toggleEstado = (id) => {
-    setAlumnos(prev => prev.map(alumno => {
-      if (alumno.id === id) {
-        let nuevoEstado = "PUNTUAL";
-        let nuevoAsistio = true;
-        if (alumno.estado === "PUNTUAL") {
-          nuevoEstado = "ATRASADO";
-          nuevoAsistio = true;
-        } else if (alumno.estado === "ATRASADO") {
-          nuevoEstado = "FALTA";
-          nuevoAsistio = false;
-        } else {
-          nuevoEstado = "PUNTUAL";
-          nuevoAsistio = true;
-        }
-        return {
-          ...alumno,
-          estado: nuevoEstado,
-          asistio: nuevoAsistio
-        };
-      }
-      return alumno;
-    }));
-  };
-
-  // Guardar lista de asistencia en backend
   const guardarAsistencia = async () => {
     setIsSaving(true);
     setSaveMessage('');
     try {
-      const response = await fetch('http://localhost:8000/api/asistencia/guardar', {
+      const response = await fetch(`${API_BASE_URL}/api/asistencia/guardar`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -370,7 +317,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
 
   return (
     <div className="attendance-container">
-      {/* Barra superior de sesión del docente */}
       <div className="teacher-topbar">
         <div className="teacher-info">
           {onBack && (
@@ -399,7 +345,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
         </div>
       </header>
 
-      {/* SECCIÓN DE GENERACIÓN DE CÓDIGO QR */}
       <div className="qr-generator-card">
         <div className="qr-card-header">
           <div className="qr-icon-title">
@@ -424,7 +369,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
           </div>
         )}
 
-        {/* VISTA RESUMIDA DEL QR SI YA FUE GENERADO */}
         {qrToken && (
           <div className="qr-summary-box">
             <div className="qr-preview-side">
@@ -464,7 +408,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
         )}
       </div>
 
-      {/* MODAL FULLSCREEN / GRANDE PARA PROYECTAR EL QR A LOS ALUMNOS */}
       {showQRModal && qrToken && (
         <div className="qr-modal-overlay" onClick={() => setShowQRModal(false)}>
           <div className="qr-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -512,6 +455,7 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
 
       <div className="attendance-table">
         <div className="table-row header-row">
+          <div className="pill header-pill">MATRÍCULA</div>
           <div className="pill header-pill">ALUMNADO</div>
           <div className="pill header-pill">ESTADO</div>
           <div className="pill header-pill">ASISTENCIA</div>
@@ -520,22 +464,19 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
 
         {alumnos.map((alumno) => (
           <div className="table-row" key={alumno.id}>
+            <div className="pill body-pill student-id">{alumno.matricula || alumno.identificador || 'N/A'}</div>
             <div className="pill body-pill student-name">{alumno.nombre}</div>
             
-            {/* Pill de Estado interactivo */}
             <div 
-              className={"pill body-pill interactive-pill status-" + alumno.estado.toLowerCase()}
-              onClick={() => toggleEstado(alumno.id)}
-              title="Haz clic para cambiar estado (PUNTUAL / ATRASADO / FALTA)"
+              className={"pill body-pill status-" + (alumno.estado ? alumno.estado.toLowerCase() : "falta")}
+              title="Asistencia registrada automáticamente por QR y matrícula"
             >
-              {alumno.estado}
+              {alumno.estado || "FALTA"}
             </div>
 
-            {/* Pill de Asistencia interactiva */}
             <div 
-              className={`pill body-pill interactive-pill check-mark ${!alumno.asistio ? 'absent' : ''}`}
-              onClick={() => toggleAsistencia(alumno.id)}
-              title="Haz clic para alternar asistencia"
+              className={`pill body-pill check-mark ${!alumno.asistio ? 'absent' : ''}`}
+              title="Asistencia registrada automáticamente por QR y matrícula"
             >
               {alumno.asistio ? "✓" : "X"}
             </div>
@@ -545,7 +486,6 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
         ))}
       </div>
 
-      {/* Botones del pie de página */}
       <div className="attendance-actions">
         <span className="save-status-msg">{saveMessage}</span>
         <div className="footer-btns-group">
@@ -569,4 +509,4 @@ const TeacherAttendance = ({ user, materia, onBack, onLogout }) => {
 };
 
 export default TeacherAttendance;
-
+

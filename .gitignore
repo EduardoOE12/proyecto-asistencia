@@ -1,24 +1,30 @@
-# Python / FastApi
+# Python / FastAPI
 backend/venv/
-backend/__pycahe__/
-*.pyc 
-*.pyo 
-*.pyd 
-.env 
-*.db 
-*.sqlite3 
+backend/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+*.db
+*.sqlite3
 
-#Node / Vite 
-frontend/node_modules/ 
-frontend/dist/ 
-frontend/.env.local 
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
 
-#IDEs 
-.vscode/ 
-.idea/ 
+# IDEs
+.vscode/
+.idea/
 *.swp
 
+# Datos sensibles — NO subir al repositorio
 backend/bd_prueba - Hoja 1.csv
 backend/regristos - Hoja 1.csv
 backend/registros-docentes.csv
 backend/registros-directores.csv
+backend/asignaciones_docentes.csv
+backend/registro_asistencias.csv
+
+# Configuración de red local — puede contener IPs privadas
+network_config.json

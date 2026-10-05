@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './DirectorDashboard.css';
 import lobosImg from './assets/lobos.JPG';
+import { API_BASE_URL } from './config';
 
 const DirectorDashboard = ({ user, onLogout }) => {
   const directorName = user?.nombre || "Director(a)";
@@ -9,7 +10,6 @@ const DirectorDashboard = ({ user, onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Estado para la pantalla de asignación de grupos de un docente seleccionado
   const [selectedDocente, setSelectedDocente] = useState(null);
   const [selectedGrupos, setSelectedGrupos] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -19,8 +19,8 @@ const DirectorDashboard = ({ user, onLogout }) => {
     try {
       setLoading(true);
       const [resDocentes, resGrupos] = await Promise.all([
-        fetch('http://localhost:8000/api/docentes'),
-        fetch('http://localhost:8000/api/grupos')
+        fetch(`${API_BASE_URL}/api/docentes`),
+        fetch(`${API_BASE_URL}/api/grupos`)
       ]);
 
       if (resDocentes.ok) {
@@ -64,7 +64,7 @@ const DirectorDashboard = ({ user, onLogout }) => {
     setIsSaving(true);
     setStatusMessage('');
     try {
-      const response = await fetch('http://localhost:8000/api/docentes/asignar-grupos', {
+      const response = await fetch(`${API_BASE_URL}/api/docentes/asignar-grupos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -76,7 +76,6 @@ const DirectorDashboard = ({ user, onLogout }) => {
 
       if (response.ok) {
         setStatusMessage('¡Grupos asignados correctamente!');
-        // Actualizar lista local de docentes
         setDocentes(prev => prev.map(doc => {
           if (doc.nombre === selectedDocente.nombre || doc.correo === selectedDocente.correo) {
             return { ...doc, grupos: selectedGrupos };
@@ -102,7 +101,6 @@ const DirectorDashboard = ({ user, onLogout }) => {
     <div className="director-container">
       <div className="director-box">
         
-        {/* Barra superior con rol y botón de cerrar sesión */}
         <div className="director-topbar">
           <div className="director-info">
             {selectedDocente && (
@@ -120,7 +118,6 @@ const DirectorDashboard = ({ user, onLogout }) => {
           )}
         </div>
 
-        {/* Encabezado: Bienvenida con el nombre y Logo Somos Lobos */}
         <header className="director-header">
           <h2 className="director-welcome">
             Bienvenido, <span>{directorName}</span>
@@ -137,7 +134,6 @@ const DirectorDashboard = ({ user, onLogout }) => {
           </div>
         </header>
 
-        {/* PANTALLA 1: ASIGNACIÓN DE GRUPOS A DOCENTE */}
         {selectedDocente ? (
           <div>
             <div className="assign-teacher-header">
@@ -184,7 +180,6 @@ const DirectorDashboard = ({ user, onLogout }) => {
             )}
           </div>
         ) : (
-          /* PANTALLA 2: LISTA DE DOCENTES CON BOTÓN DE LÁPIZ */
           <>
             <div className="director-list-title">
               <span>Lista de Docentes</span>

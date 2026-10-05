@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './Login.css';
 import lobosImg from './assets/lobos.JPG'; 
+import { API_BASE_URL } from './config';
 
-// 1. Agregamos la propiedad 'onLoginSuccess' que le manda App.jsx
 const Login = ({ onLoginSuccess }) => {
   const [pantalla, setPantalla] = useState('bienvenida');
   const [rol, setRol] = useState('');
@@ -29,7 +29,7 @@ const Login = ({ onLoginSuccess }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/login', {
+      const response = await fetch(`${API_BASE_URL}/api/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,11 +44,9 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
-        // Guardar sesión en localStorage
         localStorage.setItem('usuario_identificador', identificador);
         localStorage.setItem('usuario_rol', rol);
 
-        // Le avisamos a App.jsx que el login fue exitoso y le mandamos los datos
         if (onLoginSuccess) {
           onLoginSuccess({
             nombre: data.alumno || "Usuario",
@@ -60,7 +58,7 @@ const Login = ({ onLoginSuccess }) => {
         setErrorMsg(data.detail || 'Ocurrió un error al iniciar sesión.');
       }
     } catch (error) {
-      setErrorMsg('Error de conexión con el servidor. ¿Está encendido el backend?');
+      setErrorMsg('Error de conexión con el servidor.');
     }
   };
 
@@ -124,7 +122,6 @@ const Login = ({ onLoginSuccess }) => {
                   onChange={(e) => {
                     const val = e.target.value;
                     if (rol === 'Alumno') {
-                      // Solo permite dígitos numéricos (0-9)
                       setIdentificador(val.replace(/\D/g, ''));
                     } else {
                       setIdentificador(val);
