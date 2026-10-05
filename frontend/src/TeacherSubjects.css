@@ -36,6 +36,7 @@
   padding: 12px 20px;
   border-radius: 8px;
   margin-bottom: 20px;
+  gap: 10px;
 }
 
 .ts-teacher-info {
@@ -59,7 +60,7 @@
 }
 
 .ts-title {
-  font-size: 2rem;
+  font-size: clamp(1.4rem, 5vw, 2rem);
   font-weight: 900;
   color: #000000;
   margin: 0 0 10px 0;
@@ -69,6 +70,8 @@
 .ts-logo {
   width: 85px;
   height: 85px;
+  max-width: 25vw;
+  max-height: 25vw;
   object-fit: cover;
   border-radius: 50%;
   border: 2px solid #2b2b2b;
@@ -89,10 +92,13 @@
 /* Estilos para la tabla de Horario */
 .ts-table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin-top: 15px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   border: 1px solid #ddd;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .schedule-table {
@@ -131,6 +137,7 @@
   cursor: pointer;
   font-weight: 600;
   color: #111;
+  user-select: none;
 }
 
 .schedule-table .subject-cell:hover {
@@ -140,6 +147,54 @@
 
 .schedule-table .subject-cell:active {
   background-color: #990000;
+}
+
+/* Reglas de Adaptación Responsive */
+@media (max-width: 768px) {
+  .ts-container {
+    padding: 10px 8px;
+  }
+
+  .ts-box {
+    padding: 18px 12px;
+  }
+
+  .ts-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 14px;
+  }
+
+  .ts-teacher-info {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .schedule-table {
+    min-width: 650px;
+    font-size: 0.78rem;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 8px 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ts-list-title {
+    font-size: 0.95rem;
+  }
+
+  .schedule-table {
+    min-width: 580px;
+    font-size: 0.72rem;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: 6px 3px;
+  }
 }
 
 @keyframes fadeIn {

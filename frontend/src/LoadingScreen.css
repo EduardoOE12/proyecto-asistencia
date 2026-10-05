@@ -3,32 +3,38 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  background-color: #ffffff; /* Puedes cambiar el color de fondo */
+  min-height: 100vh;
+  background-color: #ffffff;
   font-family: Arial, sans-serif;
+  padding: 20px 15px;
+  box-sizing: border-box;
 }
 
 .app-title {
-  font-size: 3rem;
+  font-size: clamp(1.8rem, 6vw, 3rem);
   color: #222;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
   text-transform: uppercase;
   font-weight: bold;
+  text-align: center;
 }
 
 .image-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 350px; /* Mantiene un espacio fijo para que no salte el contenido */
+  justify-content: center;
+  min-height: 280px;
+  max-width: 100%;
 }
 
-/* Estilo general para tus JPG */
 .opt-img {
   width: 250px;
   height: 250px;
+  max-width: 75vw;
+  max-height: 75vw;
   object-fit: cover;
-  border-radius: 15px; /* Bordes redondeados opcionales */
+  border-radius: 15px;
 }
 
 .fase-carga {
@@ -40,7 +46,8 @@
 
 .progress-bar-container {
   width: 300px;
-  height: 25px;
+  max-width: 85vw;
+  height: 22px;
   background-color: #e0e0e0;
   border-radius: 20px;
   margin-top: 20px;
@@ -50,14 +57,15 @@
 
 .progress-bar {
   height: 100%;
-  background-color: #007bff; /* Color azul de la barra */
+  background-color: #cc0000;
   border-radius: 20px;
   transition: width 0.1s linear;
 }
 
 .loading-text {
-  margin-top: 10px;
-  font-size: 1.1rem;
+  margin-top: 12px;
+  font-size: clamp(0.95rem, 3.5vw, 1.1rem);
   color: #555;
   font-weight: 500;
+  text-align: center;
 }

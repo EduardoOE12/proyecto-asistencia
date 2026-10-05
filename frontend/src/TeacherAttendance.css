@@ -10,6 +10,7 @@
   font-family: Arial, sans-serif;
   color: #000000;
   box-sizing: border-box;
+  width: 100%;
 }
 
 /* Barra superior del Docente */
@@ -22,6 +23,7 @@
   padding: 12px 20px;
   border-radius: 8px;
   margin-bottom: 25px;
+  gap: 10px;
 }
 
 .teacher-info {
@@ -52,6 +54,7 @@
   cursor: pointer;
   margin-right: 5px;
   transition: all 0.2s ease;
+  min-height: 38px;
 }
 
 .btn-back-subject:hover {
@@ -68,6 +71,10 @@
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-logout:hover {
@@ -83,10 +90,11 @@
   margin-bottom: 25px;
   border-bottom: 2px solid #e0e0e0;
   padding-bottom: 15px;
+  gap: 15px;
 }
 
 .group-title {
-  font-size: 2.8rem;
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
   font-weight: 900;
   margin: 0;
   color: #000000;
@@ -98,7 +106,7 @@
 
 .subject-info h2 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
   font-weight: 800;
   color: #cc0000;
   text-transform: uppercase;
@@ -115,12 +123,15 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
 
 .table-row {
   display: grid;
   grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
   gap: 12px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Forma Ovalada (Pills) acorde al diseño */
@@ -137,6 +148,7 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.04);
   color: #000000;
   font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
 .interactive-pill {
@@ -201,6 +213,7 @@
   margin-top: 25px;
   padding-top: 15px;
   border-top: 2px solid #e0e0e0;
+  gap: 15px;
 }
 
 .save-status-msg {
@@ -220,6 +233,7 @@
   cursor: pointer;
   box-shadow: 0 3px 6px rgba(204, 0, 0, 0.25);
   transition: background 0.2s ease, transform 0.15s ease;
+  min-height: 44px;
 }
 
 .btn-save-attendance:hover {
@@ -248,6 +262,7 @@
   margin-bottom: 25px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
   border: 1px solid #374151;
+  box-sizing: border-box;
 }
 
 .qr-card-header {
@@ -294,6 +309,7 @@
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(204, 0, 0, 0.4);
   transition: all 0.2s ease;
+  min-height: 44px;
 }
 
 .btn-generate-qr:hover {
@@ -336,6 +352,7 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
 }
 
 .qr-token-label {
@@ -353,6 +370,7 @@
   flex-direction: column;
   gap: 10px;
   flex: 1;
+  min-width: 240px;
 }
 
 .qr-status-pill {
@@ -381,6 +399,7 @@
   align-items: center;
   gap: 10px;
   font-size: 0.95rem;
+  flex-wrap: wrap;
 }
 
 .timer-clock {
@@ -416,6 +435,7 @@
   cursor: pointer;
   width: fit-content;
   transition: background 0.2s ease;
+  min-height: 38px;
 }
 
 .btn-expand-qr:hover {
@@ -435,7 +455,8 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  padding: 20px;
+  padding: 15px;
+  box-sizing: border-box;
 }
 
 .qr-modal-content {
@@ -443,13 +464,21 @@
   color: #111827;
   width: 100%;
   max-width: 500px;
-  padding: 30px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 25px 20px;
   border-radius: 20px;
   text-align: center;
   position: relative;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   border-top: 6px solid #cc0000;
   animation: modalIn 0.25s ease-out;
+  box-sizing: border-box;
+}
+
+.qr-code-wrapper canvas {
+  max-width: 100% !important;
+  height: auto !important;
 }
 
 @keyframes modalIn {
@@ -470,7 +499,7 @@
 
 .qr-modal-header h2 {
   margin: 0;
-  font-size: 1.6rem;
+  font-size: clamp(1.2rem, 5vw, 1.6rem);
   color: #cc0000;
 }
 
@@ -482,11 +511,13 @@
 
 .qr-code-wrapper {
   background: #f9fafb;
-  padding: 20px;
+  padding: 15px;
   border-radius: 16px;
   display: inline-block;
   border: 2px dashed #d1d5db;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .qr-modal-token {
@@ -497,11 +528,12 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 .token-code-text {
   font-family: monospace;
-  font-size: 1.4rem;
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
   font-weight: 900;
   color: #cc0000;
   background: #fee2e2;
@@ -517,6 +549,8 @@
   font-size: 0.95rem;
   font-weight: bold;
   display: inline-block;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .modal-timer-badge.valid {
@@ -578,6 +612,7 @@
   font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s ease;
+  min-height: 44px;
 }
 
 .btn-close-modal-bottom:hover {
@@ -601,6 +636,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.1s ease;
+  min-height: 38px;
 }
 
 .btn-download-pdf:hover {
@@ -624,11 +660,141 @@
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s ease;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-download-pdf-footer:hover {
   background: #1f2937;
   border-color: #111827;
   transform: translateY(-1px);
+}
+
+/* Reglas de Adaptación Responsive para pantallas de celular */
+@media (max-width: 640px) {
+  .attendance-container {
+    padding: 18px 12px;
+    margin: 10px auto;
+  }
+
+  .teacher-topbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 14px;
+  }
+
+  .teacher-info {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .btn-logout {
+    width: 100%;
+  }
+
+  .attendance-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .subject-info {
+    text-align: left;
+  }
+
+  .qr-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-generate-qr {
+    width: 100%;
+  }
+
+  .qr-summary-box {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .qr-info-side {
+    width: 100%;
+    align-items: center;
+  }
+
+  .qr-actions-row {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-expand-qr, .btn-download-pdf {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table-row {
+    grid-template-columns: 1.4fr 1.1fr 0.8fr 1.1fr;
+    gap: 6px;
+  }
+
+  .pill {
+    padding: 8px 4px;
+    font-size: 0.78rem;
+    border-radius: 16px;
+  }
+
+  .header-pill {
+    font-size: 0.75rem;
+    padding: 8px 2px;
+  }
+
+  .date-text {
+    font-size: 0.75rem;
+  }
+
+  .attendance-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .footer-btns-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-download-pdf-footer, .btn-save-attendance {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .attendance-container {
+    padding: 12px 8px;
+  }
+
+  .table-row {
+    grid-template-columns: 1.3fr 1fr 0.7fr 1fr;
+    gap: 4px;
+  }
+
+  .pill {
+    padding: 6px 2px;
+    font-size: 0.7rem;
+    border-radius: 12px;
+    word-break: break-word;
+  }
+
+  .header-pill {
+    font-size: 0.65rem;
+    padding: 6px 2px;
+    letter-spacing: 0;
+  }
+
+  .date-text {
+    font-size: 0.68rem;
+  }
 }
 

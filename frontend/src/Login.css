@@ -6,6 +6,8 @@
   min-height: 100vh;
   background-color: #f0f0f0; /* Gris muy claro para el fondo exterior */
   font-family: Arial, sans-serif;
+  padding: 20px 15px;
+  box-sizing: border-box;
 }
 
 /* Caja del formulario */
@@ -19,12 +21,14 @@
   border-top: 5px solid #cc0000; /* Detalle rojo arriba */
   text-align: center;
   position: relative;
+  box-sizing: border-box;
 }
 
 .view-section {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -45,6 +49,8 @@
 .logo-login {
   width: 180px;
   height: 180px;
+  max-width: 60vw;
+  max-height: 60vw;
   object-fit: cover;
   border-radius: 50%;
   margin-bottom: 30px;
@@ -53,6 +59,8 @@
 .logo-login-small {
   width: 100px;
   height: 100px;
+  max-width: 35vw;
+  max-height: 35vw;
   object-fit: cover;
   border-radius: 50%;
   margin-bottom: 20px;
@@ -70,6 +78,11 @@
   font-weight: bold;
   transition: background-color 0.2s;
   width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 .btn-red:hover {
   background-color: #990000; /* Rojo más oscuro al pasar el mouse */
@@ -93,6 +106,11 @@
   cursor: pointer;
   font-weight: bold;
   transition: all 0.2s;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 .btn-gray:hover {
   background-color: #cccccc;
@@ -107,10 +125,15 @@
   border: none;
   color: #666;
   font-size: 14px;
+  font-weight: bold;
   cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.2s;
 }
 .btn-back:hover {
   color: #000;
+  background: #f0f0f0;
 }
 
 /* Formulario */
@@ -119,27 +142,32 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  box-sizing: border-box;
 }
 
 .input-group {
   display: flex;
   flex-direction: column;
   text-align: left;
+  width: 100%;
 }
 
 .input-group label {
   color: #333;
   font-weight: bold;
   margin-bottom: 5px;
+  font-size: 14px;
 }
 
 .input-group input {
-  padding: 10px;
+  padding: 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 16px;
   background-color: #fafafa;
-  color: #000000; /* Esta línea arregla el color del texto */
+  color: #000000;
+  box-sizing: border-box;
+  width: 100%;
 }
 .input-group input:focus {
   outline: none;
@@ -156,7 +184,7 @@
 
 .password-wrapper input {
   width: 100%;
-  padding-right: 42px; /* Espacio para el botón del ojo */
+  padding-right: 44px;
 }
 
 .btn-toggle-eye {
@@ -169,7 +197,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  padding: 6px;
   transition: color 0.2s;
 }
 
@@ -189,6 +217,41 @@
   padding: 10px;
   border-radius: 6px;
   text-align: left;
+}
+
+/* Ajustes Responsive para pantallas de celular */
+@media (max-width: 480px) {
+  .login-box {
+    padding: 30px 18px;
+    border-radius: 10px;
+  }
+
+  .title-black {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  .subtitle-gray {
+    font-size: 15px;
+    margin-bottom: 15px;
+  }
+
+  .logo-login {
+    width: 130px;
+    height: 130px;
+    margin-bottom: 20px;
+  }
+
+  .logo-login-small {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
+
+  .btn-red, .btn-gray {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
 }
 
 /* Animación de transición */
