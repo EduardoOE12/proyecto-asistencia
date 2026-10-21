@@ -1,8 +1,11 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Header
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from typing import Optional, List
 import csv
 import os
+from app.services.session_manager import session_manager
 
 app = FastAPI()
 
@@ -14,10 +17,67 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def session_invalidation_middleware(request: Request, call_next):
+    if request.method == "OPTIONS":
+        return await call_next(request)
+
+    path = request.url.path
+    # Rutas públicas o que no deben ser interrumpidas por el middleware
+    public_paths = [
+        "/api/login",
+        "/api/auth/verificar-sesion",
+        "/api/auth/logout",
+        "/docs",
+        "/openapi.json",
+        "/redoc"
+    ]
+    if any(path.startswith(p) for p in public_paths):
+        return await call_next(request)
+
+    token = request.headers.get("X-Session-Token")
+    user_id = request.headers.get("X-User-Id")
+    user_role = request.headers.get("X-User-Role")
+
+    # Si la petición incluye un token de sesión, verificar su vigencia
+    if token:
+        is_valid, reason, _ = session_manager.validate_session(token, user_id, user_role)
+        if not is_valid:
+            if reason == "INVALIDATED_NEW_DEVICE":
+                return JSONResponse(
+                    status_code=401,
+                    content={
+                        "valida": False,
+                        "codigo": "SESION_INVALIDADA",
+                        "detail": "Tu sesión ha sido cerrada automáticamente porque se inició sesión en otro dispositivo."
+                    }
+                )
+            elif user_id:
+                return JSONResponse(
+                    status_code=401,
+                    content={
+                        "valida": False,
+                        "codigo": "SESION_EXPIRADA",
+                        "detail": "Tu sesión ha expirado o no es válida. Por favor inicia sesión de nuevo."
+                    }
+                )
+
+    return await call_next(request)
+
 class LoginData(BaseModel):
     rol: str
     identificador: str
     password: str
+
+class VerifySessionData(BaseModel):
+    token: Optional[str] = None
+    identificador: Optional[str] = None
+    rol: Optional[str] = None
+
+class LogoutData(BaseModel):
+    token: Optional[str] = None
+    identificador: Optional[str] = None
+    rol: Optional[str] = None
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ARCHIVO_BD_ALUMNOS = os.path.join(BASE_DIR, "bd_prueba - Hoja 1.csv")
@@ -26,10 +86,13 @@ ARCHIVO_BD_DIRECTORES = os.path.join(BASE_DIR, "registros-directores.csv")
 ARCHIVO_REGISTRO = os.path.join(BASE_DIR, "regristos - Hoja 1.csv")
 
 @app.post("/api/login")
-async def iniciar_sesion(datos: LoginData):
+async def iniciar_sesion(datos: LoginData, request: Request):
     identificador_clean = datos.identificador.strip()
     password_clean = datos.password.strip()
     rol_clean = datos.rol.strip()
+
+    client_ip = request.client.host if request.client else ""
+    user_agent = request.headers.get("user-agent", "")
 
     ya_registrado = False
     nombre_usuario = ""
@@ -69,7 +132,21 @@ async def iniciar_sesion(datos: LoginData):
                     break
 
     if ya_registrado:
-        return {"mensaje": "Inicio de sesión exitoso", "alumno": nombre_usuario, "nombre": nombre_usuario, "rol": rol_clean}
+        session_token = session_manager.create_session(
+            identificador=identificador_clean,
+            rol=rol_clean,
+            nombre=nombre_usuario,
+            ip=client_ip,
+            user_agent=user_agent
+        )
+        return {
+            "mensaje": "Inicio de sesión exitoso",
+            "session_token": session_token,
+            "identificador": identificador_clean,
+            "alumno": nombre_usuario,
+            "nombre": nombre_usuario,
+            "rol": rol_clean
+        }
 
     persona_encontrada = None
 
@@ -144,12 +221,103 @@ async def iniciar_sesion(datos: LoginData):
 
         writer.writerow([persona_encontrada["nombre"], persona_encontrada["identificador"], password_clean, rol_clean])
 
+    session_token = session_manager.create_session(
+        identificador=identificador_clean,
+        rol=rol_clean,
+        nombre=persona_encontrada["nombre"],
+        ip=client_ip,
+        user_agent=user_agent
+    )
+
     return {
         "mensaje": "Registro e inicio de sesión exitosos por primera vez",
+        "session_token": session_token,
+        "identificador": identificador_clean,
         "alumno": persona_encontrada["nombre"],
         "nombre": persona_encontrada["nombre"],
         "rol": rol_clean
     }
+
+@app.post("/api/auth/verificar-sesion")
+@app.get("/api/auth/verificar-sesion")
+async def api_verificar_sesion(
+    request: Request,
+    datos: Optional[VerifySessionData] = None,
+    x_session_token: Optional[str] = Header(None, alias="X-Session-Token"),
+    x_user_id: Optional[str] = Header(None, alias="X-User-Id"),
+    x_user_role: Optional[str] = Header(None, alias="X-User-Role")
+):
+    token = (
+        x_session_token
+        or (datos.token if datos else None)
+        or request.query_params.get("token")
+    )
+    identificador = (
+        x_user_id
+        or (datos.identificador if datos else None)
+        or request.query_params.get("identificador")
+    )
+    rol = (
+        x_user_role
+        or (datos.rol if datos else None)
+        or request.query_params.get("rol")
+    )
+
+    if not token:
+        raise HTTPException(
+            status_code=401,
+            detail="No se proporcionó un token de sesión."
+        )
+
+    is_valid, reason, session_info = session_manager.validate_session(token, identificador, rol)
+
+    if not is_valid:
+        if reason == "INVALIDATED_NEW_DEVICE":
+            raise HTTPException(
+                status_code=401,
+                detail="Tu sesión ha sido cerrada automáticamente porque se inició sesión en otro dispositivo."
+            )
+        else:
+            raise HTTPException(
+                status_code=401,
+                detail="Sesión expirada o no válida. Por favor inicia sesión de nuevo."
+            )
+
+    return {
+        "valida": True,
+        "usuario": {
+            "identificador": session_info.get("identificador"),
+            "nombre": session_info.get("nombre"),
+            "rol": session_info.get("rol")
+        }
+    }
+
+@app.post("/api/auth/logout")
+async def api_cerrar_sesion(
+    request: Request,
+    datos: Optional[LogoutData] = None,
+    x_session_token: Optional[str] = Header(None, alias="X-Session-Token"),
+    x_user_id: Optional[str] = Header(None, alias="X-User-Id"),
+    x_user_role: Optional[str] = Header(None, alias="X-User-Role")
+):
+    token = (
+        x_session_token
+        or (datos.token if datos else None)
+        or request.query_params.get("token")
+    )
+    identificador = (
+        x_user_id
+        or (datos.identificador if datos else None)
+        or request.query_params.get("identificador")
+    )
+    rol = (
+        x_user_role
+        or (datos.rol if datos else None)
+        or request.query_params.get("rol")
+    )
+
+    session_manager.terminate_session(token, identificador, rol)
+    return {"mensaje": "Sesión finalizada exitosamente"}
 
 from app.routers import asistencia
 app.include_router(asistencia.router)

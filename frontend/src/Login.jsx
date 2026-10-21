@@ -44,14 +44,20 @@ const Login = ({ onLoginSuccess }) => {
       const data = await response.json();
 
       if (response.ok) {
+        const nombreFinal = data.nombre || data.alumno || "Usuario";
+        if (data.session_token) {
+          localStorage.setItem('usuario_token', data.session_token);
+        }
         localStorage.setItem('usuario_identificador', identificador);
         localStorage.setItem('usuario_rol', rol);
+        localStorage.setItem('usuario_nombre', nombreFinal);
 
         if (onLoginSuccess) {
           onLoginSuccess({
-            nombre: data.alumno || "Usuario",
+            nombre: nombreFinal,
             rol: rol,
-            identificador: identificador
+            identificador: identificador,
+            session_token: data.session_token
           });
         }
       } else {

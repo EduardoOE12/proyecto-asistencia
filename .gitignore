@@ -28,3 +28,6 @@ backend/registro_asistencias.csv
 
 # Configuración de red local — puede contener IPs privadas
 network_config.json
+
+# Sesiones de usuario temporales
+backend/sesiones_activas.json

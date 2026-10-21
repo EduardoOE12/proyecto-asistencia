@@ -1,31 +1,184 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import LoadingScreen from './LoadingScreen';
 import Login from './Login';
 import TeacherSubjects from './TeacherSubjects';
 import TeacherAttendance from './TeacherAttendance';
 import StudentDashboard from './StudentDashboard';
 import DirectorDashboard from './DirectorDashboard';
+import SessionModal from './SessionModal';
+import { API_BASE_URL } from './config';
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
-  
   const [selectedSubject, setSelectedSubject] = useState(null);
+
+  // Estado para el modal de sesión única invalidada
+  const [sessionModalOpen, setSessionModalOpen] = useState(false);
+  const [sessionModalMsg, setSessionModalMsg] = useState('');
+
+  // Función para cerrar la sesión localmente y mostrar aviso
+  const handleInvalidateSession = useCallback((mensaje) => {
+    localStorage.removeItem('usuario_token');
+    localStorage.removeItem('usuario_identificador');
+    localStorage.removeItem('usuario_rol');
+    localStorage.removeItem('usuario_nombre');
+    setCurrentUser(null);
+    setSelectedSubject(null);
+    setSessionModalMsg(
+      mensaje ||
+        'Tu sesión ha sido cerrada automáticamente porque se inició sesión en otro dispositivo.'
+    );
+    setSessionModalOpen(true);
+  }, []);
+
+  // 1. Restaurar y validar sesión existente al iniciar la app
+  useEffect(() => {
+    const storedToken = localStorage.getItem('usuario_token');
+    const storedId = localStorage.getItem('usuario_identificador');
+    const storedRol = localStorage.getItem('usuario_rol');
+    const storedNombre = localStorage.getItem('usuario_nombre');
+
+    if (storedToken && storedId) {
+      fetch(`${API_BASE_URL}/api/auth/verificar-sesion`, {
+        headers: {
+          'X-Session-Token': storedToken,
+          'X-User-Id': storedId,
+          'X-User-Role': storedRol || ''
+        }
+      })
+        .then(async (res) => {
+          if (res.ok) {
+            const data = await res.json();
+            setCurrentUser({
+              nombre: data.usuario?.nombre || storedNombre || 'Usuario',
+              rol: data.usuario?.rol || storedRol,
+              identificador: data.usuario?.identificador || storedId,
+              session_token: storedToken
+            });
+          } else {
+            const data = await res.json().catch(() => ({}));
+            if (
+              data.codigo === 'SESION_INVALIDADA' ||
+              (typeof data.detail === 'string' &&
+                data.detail.toLowerCase().includes('otro dispositivo'))
+            ) {
+              handleInvalidateSession(data.detail);
+            } else {
+              // Token expirado o desconocido, limpiar sin alertar ruidosamente
+              localStorage.removeItem('usuario_token');
+              localStorage.removeItem('usuario_identificador');
+              localStorage.removeItem('usuario_rol');
+              localStorage.removeItem('usuario_nombre');
+            }
+          }
+        })
+        .catch(() => {
+          // Si el servidor no responde en el arranque, mantener datos locales si los hay
+          if (storedNombre && storedRol) {
+            setCurrentUser({
+              nombre: storedNombre,
+              rol: storedRol,
+              identificador: storedId,
+              session_token: storedToken
+            });
+          }
+        });
+    }
+  }, [handleInvalidateSession]);
+
+  // 2. Escuchar evento global disparado por el sessionInterceptor cuando cualquier API responde 401
+  useEffect(() => {
+    const onSessionInvalidada = (event) => {
+      const msg = event?.detail?.mensaje;
+      handleInvalidateSession(msg);
+    };
+
+    window.addEventListener('sesion-invalidada', onSessionInvalidada);
+    return () => {
+      window.removeEventListener('sesion-invalidada', onSessionInvalidada);
+    };
+  }, [handleInvalidateSession]);
+
+  // 3. Heartbeat en segundo plano: verificar periódicamente que la sesión siga activa
+  useEffect(() => {
+    if (!currentUser?.session_token) return;
+
+    let isSubscribed = true;
+
+    const checkActiveSession = async () => {
+      try {
+        const token = currentUser.session_token;
+        const res = await fetch(`${API_BASE_URL}/api/auth/verificar-sesion`, {
+          headers: {
+            'X-Session-Token': token,
+            'X-User-Id': currentUser.identificador,
+            'X-User-Role': currentUser.rol
+          }
+        });
+
+        if (!res.ok && isSubscribed) {
+          const data = await res.json().catch(() => ({}));
+          handleInvalidateSession(
+            data.detail ||
+              'Tu sesión ha sido cerrada automáticamente porque se inició sesión en otro dispositivo.'
+          );
+        }
+      } catch (err) {
+        // Ignorar caídas momentáneas de red para no interrumpir al usuario por lag
+      }
+    };
+
+    // Verificar cada 3.5 segundos
+    const intervalId = setInterval(checkActiveSession, 3500);
+
+    return () => {
+      isSubscribed = false;
+      clearInterval(intervalId);
+    };
+  }, [currentUser, handleInvalidateSession]);
 
   const handleLoginSuccess = (userObj) => {
     setCurrentUser(userObj);
     setSelectedSubject(null);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const token = currentUser?.session_token || localStorage.getItem('usuario_token');
+    const id = currentUser?.identificador || localStorage.getItem('usuario_identificador');
+    const rol = currentUser?.rol || localStorage.getItem('usuario_rol');
+
+    if (token) {
+      try {
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Session-Token': token,
+            'X-User-Id': id || '',
+            'X-User-Role': rol || ''
+          },
+          body: JSON.stringify({ token, identificador: id, rol })
+        });
+      } catch (_) {}
+    }
+
+    localStorage.removeItem('usuario_token');
     localStorage.removeItem('usuario_identificador');
     localStorage.removeItem('usuario_rol');
+    localStorage.removeItem('usuario_nombre');
     setCurrentUser(null);
     setSelectedSubject(null);
   };
 
   return (
     <>
+      <SessionModal
+        isOpen={sessionModalOpen}
+        message={sessionModalMsg}
+        onClose={() => setSessionModalOpen(false)}
+      />
+
       {isLoading ? (
         <LoadingScreen onFinish={() => setIsLoading(false)} />
       ) : !currentUser ? (
